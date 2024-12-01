@@ -2,7 +2,7 @@ import { User, Book } from '../models/index.js';
 import { signToken, AuthenticationError } from '../utils/auth.js';
 
 interface AddUserArgs {
-    input:{
+    input: {
         username: string;
         email: string;
         password: string;
@@ -15,13 +15,13 @@ interface LoginUserArgs {
 }
 
 interface AddBookArgs {
-    input:{
+    input: {
         bookId: string;
         authors: string;
         description: string;
         title: string;
         image: string;
-        link: string;        
+        link: string;   
     }
 }
 
@@ -31,7 +31,7 @@ interface RemoveBookArgs {
 
 const resolvers = {
     Query: {
-        me: async (_parent: any, _args: any, context: any) => {
+        me: async (_parent: unknown, _args: unknown, context: any) => {
             if (context.user) {
                 return User.findOne({ _id: context.user._id }).populate('books');
             }
@@ -39,7 +39,7 @@ const resolvers = {
         },
     },
     Mutation: {
-        addUser: async (_parent: any, { input }: AddUserArgs) => {
+        addUser: async (_parent: any, {input}: AddUserArgs) => {
             const user = await User.create({ ...input });
 
             const token = signToken(user.username, user.email, user._id);
@@ -70,7 +70,7 @@ const resolvers = {
 
                 // Does this need to be reworked???
 
-                const book = await Book.findOne({ ...input });
+                const book: any = await Book.findOne({ ...input });
 
                 await User.findOneAndUpdate(
                     { _id: context.user_id },
