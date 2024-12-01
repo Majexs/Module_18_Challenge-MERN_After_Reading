@@ -4,6 +4,8 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import App from './App.js'
 import SearchBooks from './pages/SearchBooks.js'
 import SavedBooks from './pages/SavedBooks.js'
+import LoginForm from './pages/LoginForm.js'
+import SignupForm from './pages/SignupForm.js'
 import ErrorPage from './pages/Error.js'
 
 const router = createBrowserRouter([
@@ -19,8 +21,20 @@ const router = createBrowserRouter([
             {
                 // Wrong path???
 
-                path: 'users/:userId',
+                path: '/me',
                 element: <SavedBooks/>,
+            },
+            {
+                // Wrong path???
+
+                path: '/login',
+                element: <LoginForm/>,
+            },
+            {
+                // Wrong path???
+
+                path: '/signup',
+                element: <SignupForm/>,
             },
         ],
     },
