@@ -1,6 +1,6 @@
 import { Schema, model, Document } from 'mongoose';
 
-interface IBook extends Document {
+export interface IBook extends Document {
     bookId: string;
     authors: string[];
     description: string;

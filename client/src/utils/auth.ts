@@ -1,20 +1,17 @@
-import { type JwtPayload, jwtDecode } from 'jwt-decode';
+import { jwtDecode } from 'jwt-decode';
 
 // Is different data necessary?
 
-interface ExtendedJwt extends JwtPayload {
-    data:{
-        username:string,
-        email:string,
-        _id:string
-    }
-};
+interface UserToken {
+    name: string;
+    exp: number;
+}
 
 //  Should getProfile be a different function name?
 
 class AuthService {
     getProfile() {
-        return jwtDecode<ExtendedJwt>(this.getToken());
+        return jwtDecode(this.getToken() || '');
     }
 
     loggedIn() {
@@ -24,19 +21,19 @@ class AuthService {
 
     isTokenExpired(token: string) {
         try {
-            const decoded = jwtDecode<JwtPayload>(token);
+            const decoded = jwtDecode<UserToken>(token);
 
-            if (decoded?.exp && decoded?.exp < Date.now() / 1000) {
+            if (decoded?.exp < Date.now() / 1000) {
                 return true;
             }
+            return false;
         } catch (err) {
             return false;
         }
     }
 
-    getToken(): string {
-        const loggedUser = localStorage.getItem('id_token') || '';
-        return loggedUser;
+    getToken() {
+        return localStorage.getItem('id_token');
     }
 
     login(idToken: string) {

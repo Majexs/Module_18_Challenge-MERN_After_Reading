@@ -2,12 +2,14 @@ import { Schema, model, Document } from 'mongoose';
 import bcrypt from 'bcrypt';
 
 // Define an interface for the User document
-interface IUser extends Document {
+export interface IUser extends Document {
+  _id: string;
   username: string;
   email: string;
   password: string;
   books: Schema.Types.ObjectId[];
   isCorrectPassword(password: string): Promise<boolean>;
+  bookCount: number;
 }
 
 // Define the schema for the User document

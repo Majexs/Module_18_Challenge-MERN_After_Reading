@@ -1,5 +1,13 @@
-import { User, Book } from '../models/index.js';
+import { User } from '../models/index.js';
 import { signToken, AuthenticationError } from '../utils/auth.js';
+
+interface User {
+    _id: string;
+    username: string;
+    email: string;
+    books: Array<any>;
+    bookCount: number;
+}
 
 interface AddUserArgs {
     input: {
@@ -29,25 +37,29 @@ interface RemoveBookArgs {
     bookId: string;
 }
 
+interface Context {
+    user: User;
+}
+
 const resolvers = {
     Query: {
-        me: async (_parent: unknown, _args: unknown, context: any) => {
+        me: async (_parent: unknown, _args: unknown, context: Context): Promise<User|null> => {
             if (context.user) {
-                return User.findOne({ _id: context.user._id }).populate('books');
+                return await User.findOne({ _id: context.user._id });
             }
             throw new AuthenticationError('Could not authenticate user.');
         },
     },
     Mutation: {
-        addUser: async (_parent: any, {input}: AddUserArgs) => {
+        addUser: async (_parent: any, {input}: AddUserArgs): Promise<{token: string; user: User}> => {
             const user = await User.create({ ...input });
 
             const token = signToken(user.username, user.email, user._id);
 
-            return { token, user };
+            return { token, user: user as User };
         },
 
-        loginUser: async (_parent: any, { email, password }: LoginUserArgs) => {
+        loginUser: async (_parent: any, { email, password }: LoginUserArgs): Promise<{ token: string; user: User }> => {
             const user = await User.findOne({ email});
 
             if (!user) {
@@ -62,45 +74,47 @@ const resolvers = {
 
             const token = signToken(user.username, user.email, user.id);
 
-            return { token, user };
+            return { token, user: user as User };
         },
 
-        saveBook: async (_parent: any, { input }: AddBookArgs, context: any) => {
+        saveBook: async (_parent: any, { input }: {input: AddBookArgs}, context: Context): Promise<User | null> => {
             if (context.user) {
-
-                // Does this need to be reworked???
-
-                const book: any = await Book.findOne({ ...input });
-
-                await User.findOneAndUpdate(
-                    { _id: context.user_id },
-                    { $addToSet: { books: book._id }}
+                const updatedUser = await User.findOneAndUpdate(
+                    {_id: context.user._id},
+                    {
+                        $addToSet: {
+                            savedBooks: input,
+                        },
+                        $inc: {bookCount: 1},
+                    },
+                    {
+                        new: true,
+                        runValidators: true,
+                    }
                 );
 
-                return book;
+                return updatedUser as User;
             }
-            throw AuthenticationError;
-            ('You need to be logged in!');
+            throw new AuthenticationError('You need to be logged in!');
         },
 
-        removeBook: async (_parent: any, { bookId }: RemoveBookArgs, context: any) => {
+        removeBook: async (_parent: any, { bookId }: RemoveBookArgs, context: Context): Promise<User | null> => {
             if (context.user) {
-                const book = await Book.findOneAndDelete({
-                    _id: bookId,
-                });
-
-                if(!book) {
-                    throw AuthenticationError;
-                }
-
-                await User.findOneAndUpdate(
-                    { _id: context.user._id },
-                    { $pull: { books: book._id }}
+                const updatedUser = await User.findOneAndUpdate(
+                    {_id: context.user._id},
+                    {
+                        $pull: {
+                            savedBooks: {bookId},
+                        },
+                        $inc: {bookCount: -1},
+                    },
+                    {
+                        new: true,
+                    }
                 );
-
-                return book;
+                return updatedUser as User;
             }
-            throw AuthenticationError;
+            throw new AuthenticationError('Not authenticated');
         },
     },
 };
