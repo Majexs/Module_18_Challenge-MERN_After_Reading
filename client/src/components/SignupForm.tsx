@@ -33,7 +33,7 @@ const SignupForm = ({}: { handleModalClose: () => void }) => {
     }
 
     try {
-      const response = await addUser({
+      const { data } = await addUser({
         variables: {
             input:{
                 username: userFormData.username,
@@ -42,12 +42,12 @@ const SignupForm = ({}: { handleModalClose: () => void }) => {
             },
         },
       });
-
-      if (!response.data) {
+      console.log('data', data);
+      if (!data) {
         throw new Error('something went wrong!');
       }
 
-      const { token } = response.data.addUser
+      const { token } = data.addUser
       Auth.login(token);
     } catch (err) {
       console.error(err);

@@ -24,11 +24,11 @@ const typeDefs = `#graphql
 
     input BookInput {
         bookId: String!
-        authors: String!
-        description: String!
-        title: String!
-        image: String!
-        link: String!
+        # authors: String!
+        # description: String!
+        # title: String!
+        # image: String!
+        # link: String!
     }
 
     type Auth {
