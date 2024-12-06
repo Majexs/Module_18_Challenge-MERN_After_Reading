@@ -23,7 +23,7 @@ const SavedBooks = () => {
         username: '',
         email: '',
         password: '',
-        books: [],
+        savedBooks: [],
     };
 
   // create function that accepts the book's mongo _id value as param and deletes the book from the database
@@ -44,6 +44,7 @@ const SavedBooks = () => {
             }
 
             removeBookId(bookId);
+            window.location.reload();
         } catch (err) {
             console.error(err);
         }
@@ -62,14 +63,14 @@ const SavedBooks = () => {
       </div>
       <Container>
         <h2 className='pt-5'>
-          {userData.books.length
-            ? `Viewing ${userData.books.length} saved ${
-                userData.books.length === 1 ? 'book' : 'books'
+          {userData.savedBooks.length
+            ? `Viewing ${userData.savedBooks.length} saved ${
+                userData.savedBooks.length === 1 ? 'book' : 'books'
               }:`
             : 'You have no saved books!'}
         </h2>
         <Row>
-          {userData.books.map((book) => {
+          {userData.savedBooks.map((book) => {
             return (
               <Col md='4'>
                 <Card key={book.bookId} border='dark'>

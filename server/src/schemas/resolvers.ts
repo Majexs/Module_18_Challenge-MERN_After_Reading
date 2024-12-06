@@ -5,7 +5,7 @@ interface User {
     _id: string;
     username: string;
     email: string;
-    books: Array<any>;
+    savedBooks: Array<any>;
     bookCount: number;
 }
 

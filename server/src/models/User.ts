@@ -1,5 +1,7 @@
 import { Schema, model, Document } from 'mongoose';
 import bcrypt from 'bcrypt';
+import bookSchema from './Book.js';
+import type { BookDocument } from './Book.js';
 
 // Define an interface for the User document
 export interface IUser extends Document {
@@ -7,7 +9,7 @@ export interface IUser extends Document {
   username: string;
   email: string;
   password: string;
-  books: Schema.Types.ObjectId[];
+  savedBooks: BookDocument[];
   isCorrectPassword(password: string): Promise<boolean>;
   bookCount: number;
 }
@@ -32,11 +34,8 @@ const userSchema = new Schema<IUser>(
       required: true,
       minlength: 5,
     },
-    books: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: 'Book',
-      },
+    savedBooks: [
+      bookSchema
     ],
   },
   {

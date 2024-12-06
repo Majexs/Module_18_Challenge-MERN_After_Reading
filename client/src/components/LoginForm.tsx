@@ -10,7 +10,7 @@ import type { User } from '../interfaces/User';
 
 const LoginForm = ({}: { handleModalClose: () => void }) => {
     const [loginUser] = useMutation(LOGIN_USER);
-    const [userFormData, setUserFormData] = useState<User>({ username: '', email: '', password: '', books: [] });
+    const [userFormData, setUserFormData] = useState<User>({ username: '', email: '', password: '', savedBooks: [] });
     const [validated] = useState(false);
     const [showAlert, setShowAlert] = useState(false);
 
@@ -35,12 +35,8 @@ const LoginForm = ({}: { handleModalClose: () => void }) => {
                     password: userFormData.password
                 }
             })
-
-            if (!response?.data) {
-                throw new Error('something went wrong!');
-            }
-
-            const { token } = response.data.login
+            console.log(response);
+            const { token } = response.data.loginUser
         
             Auth.login(token);
         } catch (err) {
@@ -52,7 +48,7 @@ const LoginForm = ({}: { handleModalClose: () => void }) => {
             username: '',
             email: '',
             password: '',
-            books: [],
+            savedBooks: [],
         });
     };
 
